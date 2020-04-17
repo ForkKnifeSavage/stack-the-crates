@@ -7,6 +7,10 @@
 </head>
 <body>
     <script>
+
+        var timerText;
+        var remainingSeconds = 60;
+
         const config = {
             type: Phaser.AUTO,
             width: 640,
@@ -24,15 +28,27 @@
        
         function preload()
         {
-            this.load.image('Giraffe', '/assets/giraffe.png');
+            this.load.image('giraffe', '/assets/giraffe.png');
+            this.load.image('air', '/assets/landscape_rand1.png');
+            this.load.image('lava', '/assets/Lava.png');
             //this.load.audio('thump', '/assets/thump.wav');
+        }
+
+        function countDown() {
+            remainingSeconds = remainingSeconds - 1;
+            timerText.setText(remainingSeconds);
         }
 
         function create ()
         {
-            var Giraffe = this.add.image(200, 200, 'Giraffe');
+            var air = this.add.image(200, 200, 'air');
             air.displayWidth = game.config.width*2;
-
+            timerText = this.add.text(16, 16, '60', { fontSize: '32px', fill: '#000' });
+            var timer = this.time.addEvent({
+                repeat: 60, delay: 1000, callback: countDown
+                
+            });
+            this.add.image(135, 1250, 'lava');
         }
                                   
 
