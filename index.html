@@ -10,6 +10,8 @@
 
         var timerText;
         var remainingSeconds = 60;
+        var spacebar;
+        var tween;
 
         const config = {
             type: Phaser.AUTO,
@@ -31,7 +33,7 @@
             this.load.image('giraffe', '/assets/giraffe.png');
             this.load.image('air', '/assets/landscape_rand1.png');
             this.load.image('lava', '/assets/Lava.png');
-            //this.load.audio('thump', '/assets/thump.wav');
+            this.load.audio('thump', '/assets/thump.wav');
         }
 
         function countDown() {
@@ -41,6 +43,8 @@
 
         function create ()
         {
+            spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
             var air = this.add.image(200, 200, 'air');
             air.displayWidth = game.config.width*2;
             timerText = this.add.text(16, 16, '60', { fontSize: '32px', fill: '#000' });
@@ -48,7 +52,26 @@
                 repeat: 60, delay: 1000, callback: countDown
                 
             });
-            this.add.image(135, 1250, 'lava');
+            var lava = this.matter.add.sprite(135, 1250, 'lava', null, {isStatic: true});
+
+            this.giraffe = this.matter.add.sprite(300, 100, 'giraffe');
+            this.giraffe.setIgnoreGravity(true);
+            this.giraffe.setBounce(2);
+            this.giraffe.setScale(0.5, 0.5);
+            tween = this.tweens.add({
+                targets: this.giraffe,
+                x: 350,
+                duration: 4000,
+                ease: 'Expo.easeInOut',
+                repeat: -1,
+                yoyo:true
+            });
+            myGame = this;
+            this.matter.world.on('collisionstart', function(event, thingA, thingB) {
+                var thumpSound = myGame.sound.add('thump');
+                thumpSound.play();
+                //alert('wow')
+            });
         }
                                   
 
@@ -61,6 +84,11 @@
 
     function update ()
     {
+        if (Phaser.Input.Keyboard.JustDown(spacebar)) {
+            //alert('Spacebar pressed!');
+            this.giraffe.setIgnoreGravity(false);
+            tween.stop();
+        }
       
 
 
