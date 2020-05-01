@@ -7,6 +7,8 @@
 </head>
 <body>
     <script>
+        var falling;
+
 
         var timerText;
         var remainingSeconds = 60;
@@ -26,6 +28,7 @@
                 update: update
             }
         };
+        var phaser;
         const game = new Phaser.Game(config);
        
         function preload()
@@ -52,12 +55,13 @@
                 repeat: 60, delay: 1000, callback: countDown
                 
             });
-            var lava = this.matter.add.sprite(135, 1250, 'lava', null, {isStatic: true});
-
-            this.giraffe = this.matter.add.sprite(300, 100, 'giraffe');
+            var lava = this.matter.add.sprite(300, 1250, 'lava', null, {isStatic: true});
+            lava.displayWidth = 350;
+            this.giraffe = this.matter.add.sprite(400, 100, 'giraffe');
+            //this.giraffe = this.matter.add.sprite(300, 100, 'giraffe');
             this.giraffe.setIgnoreGravity(true);
             this.giraffe.setBounce(2);
-            this.giraffe.setScale(0.5, 0.5);
+            this.giraffe.setScale(0.3, 0.3);
             tween = this.tweens.add({
                 targets: this.giraffe,
                 x: 350,
@@ -66,10 +70,26 @@
                 repeat: -1,
                 yoyo:true
             });
-            myGame = this;
+            phaser = this;
             this.matter.world.on('collisionstart', function(event, thingA, thingB) {
-                var thumpSound = myGame.sound.add('thump');
+                var thumpSound = phaser.sound.add('thump');
                 thumpSound.play();
+                if (falling == true) {
+                    phaser.giraffe = phaser.matter.add.sprite(400, 100, 'giraffe');
+                    phaser.giraffe.setIgnoreGravity(true);
+                    phaser.giraffe.setBounce(2);
+                    phaser.giraffe.setScale(0.3, 0.3);
+                    tween = phaser.tweens.add({
+                        targets: phaser.giraffe,
+                        x: 350,
+                        duration: 4000,
+                        ease: 'Expo.easeInOut',
+                        repeat: -1,
+                        yoyo:true
+                    });
+                    falling = false;
+                }
+
                 //alert('wow')
             });
         }
@@ -88,6 +108,7 @@
             //alert('Spacebar pressed!');
             this.giraffe.setIgnoreGravity(false);
             tween.stop();
+            falling = true;
         }
       
 
