@@ -8,12 +8,13 @@
 <body>
     <script>
         var falling;
-
-
+        var score = 0;
+        var scoreText;
         var timerText;
         var remainingSeconds = 60;
         var spacebar;
         var tween;
+        var barrier;
 
         const config = {
             type: Phaser.AUTO,
@@ -44,27 +45,34 @@
             timerText.setText(remainingSeconds);
         }
 
+
         function create ()
         {
+
+           
+            
             spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
             var air = this.add.image(200, 200, 'air');
             air.displayWidth = game.config.width*2;
+            scoreText = this.add.text(64, 16, 'hi', { fontSize: '32px', fill: '#000' });
             timerText = this.add.text(16, 16, '60', { fontSize: '32px', fill: '#000' });
             var timer = this.time.addEvent({
                 repeat: 60, delay: 1000, callback: countDown
                 
             });
-            var lava = this.matter.add.sprite(300, 1250, 'lava', null, {isStatic: true});
+            var lava = this.matter.add.sprite(300, 1250, 'lava', null, {isStatic: true, id: "lava"});
+            var lava2 = this.matter.add.sprite(300, 2000, 'lava', null, {isStatic: true, id: "lava2"});
             lava.displayWidth = 350;
             this.giraffe = this.matter.add.sprite(400, 100, 'giraffe');
             //this.giraffe = this.matter.add.sprite(300, 100, 'giraffe');
+
             this.giraffe.setIgnoreGravity(true);
             this.giraffe.setBounce(2);
             this.giraffe.setScale(0.3, 0.3);
             tween = this.tweens.add({
                 targets: this.giraffe,
-                x: 350,
+                x: 600,
                 duration: 4000,
                 ease: 'Expo.easeInOut',
                 repeat: -1,
@@ -73,11 +81,19 @@
             phaser = this;
             this.matter.world.on('collisionstart', function(event, thingA, thingB) {
                 var thumpSound = phaser.sound.add('thump');
-                thumpSound.play();
+                scoreText.setText(score);
+                if (thingA.id == "lava") {
+                    thumpSound.play();
+                }
+                if (thingB.id == "lava2") {
+                    score = score - 10;
+                    thingB.gameObject.destroy();
+                }
                 if (falling == true) {
                     phaser.giraffe = phaser.matter.add.sprite(400, 100, 'giraffe');
+                    score = score + 10;
                     phaser.giraffe.setIgnoreGravity(true);
-                    phaser.giraffe.setBounce(2);
+                    phaser.giraffe.setBounce(0.1);
                     phaser.giraffe.setScale(0.3, 0.3);
                     tween = phaser.tweens.add({
                         targets: phaser.giraffe,
