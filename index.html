@@ -7,6 +7,18 @@
 </head>
 <body>
     <script>
+
+        const url = 'https://webhooks.mongodb-stitch.com/api/client/v2.0/app/stack-the-crates-qvmos/service/high-scores/incoming_webhook/webhook0';
+        fetch(url).then(function(response) {
+            return response.json();
+        }).then(function(result) {
+            let scores = '';
+            for (let row of result) {
+                scores += row.name + ': ' + row.score;
+            }
+            alert(scores);
+        });
+
         var falling;
         var score = 0;
         var scoreText;
@@ -29,6 +41,7 @@
                 update: update
             }
         };
+
         var phaser;
         const game = new Phaser.Game(config);
        
